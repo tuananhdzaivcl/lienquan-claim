@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "build": {
+    "env": {}
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  }
+}
