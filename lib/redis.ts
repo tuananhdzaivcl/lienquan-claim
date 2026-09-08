@@ -1,14 +1,19 @@
 import { Redis } from '@upstash/redis';
 
-let redis: Redis;
+let redis: Redis | null = null;
 
-const url = process.env.UPSTASH_REST_URL || process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.UPSTASH_REST_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-
-if (!url || !token) {
-  throw new Error('Missing UPSTASH_REST_URL (or UPSTASH_REDIS_REST_URL) or UPSTASH_REST_TOKEN (or UPSTASH_REDIS_REST_TOKEN) env var');
+function getUpstashConfig() {
+  const url = process.env.UPSTASH_REST_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REST_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  return { url, token };
 }
 
-redis = new Redis({ url, token });
-
-export default redis;
+export function getRedis() {
+  if (redis) return redis;
+  const { url, token } = getUpstashConfig();
+  if (!url || !token) {
+    throw new Error('Missing Upstash REST URL/token. Set UPSTASH_REST_URL and UPSTASH_REST_TOKEN (or UPSTASH_REDIS_REST_*) in env.');
+  }
+  redis = new Redis({ url, token });
+  return redis;
+}
